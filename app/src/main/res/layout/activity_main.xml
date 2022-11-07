@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/grey"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -21,7 +21,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            >
 
             <ImageView
                 android:id="@+id/btnAzul"
@@ -58,8 +59,8 @@
                 android:src="@drawable/btn_rojo_apagado"
                 android:longClickable="false"
                 android:shadowDx="150"
-                android:shadowDy="150"
-                android:clickable="true"/>
+                android:backgroundTint="@null"
+                android:shadowDy="150" />
 
             <ImageView
                 android:id="@+id/btnAmarillo"
@@ -68,8 +69,8 @@
                 android:src="@drawable/btn_amarillo_apagado"
                 android:backgroundTint="@null"
                 android:longClickable="false"
-                android:shadowDx="50"
-                android:shadowDy="50"
+                android:shadowDx="150"
+                android:shadowDy="150"
                 android:clickable="true"/>
 
 
@@ -82,58 +83,29 @@
         android:layout_width="180dp"
         android:layout_height="180dp"
         android:background="@drawable/centrro_colores"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
         app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
         app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toStartOf="@id/linearLayoutCompat"
         app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat"
-        app:layout_constraintVertical_bias="0.5"
-        android:clickable="true"/>
+        app:layout_constraintVertical_bias="0.5" />
 
-    <View
-        android:id="@+id/view2"
-        android:layout_width="400dp"
-        android:layout_height="40dp"
-        android:background="@drawable/cross_colores"
-        android:backgroundTint="@color/grey"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view"
-        app:layout_constraintVertical_bias=".47" />
 
-    <View
-        android:layout_width="40dp"
-        android:layout_height="400dp"
-        android:background="@drawable/cross_colores_horizontal"
-        android:backgroundTint="@color/grey"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@id/viewRing"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toTopOf="@id/viewRing" />
 
-    <View
-        android:id="@+id/viewRing"
-        android:layout_width="410dp"
-        android:layout_height="410dp"
-        android:background="@drawable/ring_colores"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.01"/>
+
+
+
 
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/viewRing"
+        app:layout_constraintEnd_toEndOf="@id/linearLayoutCompat"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="@id/viewRing"
-        app:layout_constraintTop_toBottomOf="@id/viewRing">
+        app:layout_constraintStart_toStartOf="@id/linearLayoutCompat"
+        app:layout_constraintTop_toBottomOf="@id/linearLayoutCompat">
 
         <LinearLayout
             android:layout_width="wrap_content"
