@@ -150,6 +150,14 @@ fun comprobarClickUser(color : Colores, ronda : Int){
         findViewById<ImageView>(R.id.btnAmarillo).isClickable = false
         findViewById<ImageView>(R.id.btnVerde).isClickable = false
         findViewById<ImageView>(R.id.btnAzul).isClickable = false
+        if(color != (secuenciaCpu[ronda])){
+            var dialogo = AlertDialog.Builder(this)
+            dialogo.setMessage("Has Perdido")
+            dialogo.setPositiveButton("Ok") { _, _ ->
+                pausa = false
+
+            }
+
     }
 }
 
@@ -157,13 +165,7 @@ fun comprobarClickUser(color : Colores, ronda : Int){
     fun mostrarPatronCPU(){
         for (item in secuenciaCpu){
             for (itemUser in secuenciaUser){
-                if(item != (itemUser)){
-                    var dialogo = AlertDialog.Builder(this)
-                    dialogo.setMessage("Has Perdido")
-                    dialogo.setPositiveButton("Ok") { _, _ ->
-                        pausa = false
 
-                    }
                 }
             }
         }
