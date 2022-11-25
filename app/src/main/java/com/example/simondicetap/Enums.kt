@@ -5,5 +5,5 @@ enum class Colores(var drawableId : Int) {
 }
 
 enum class Velocidades(var milis : Long){
-    RAPIDO(100), MEDIO(300), LENTO(600)
+    RAPIDO(300), MEDIO(500), LENTO(800)
 }

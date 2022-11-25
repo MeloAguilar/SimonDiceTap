@@ -48,7 +48,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
+        quitarClickBotones(binding.btnAmarillo,
+            binding.btnAzul,
+            binding.btnVerde,
+            binding.btnRojo)
     }
 
     /**
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity() {
      *
      */
     fun onClickBotonesInicio(numBtn: Int) {
-        if (secuenciaCpu.size > 0){
+        if (secuenciaCpu.size > 0) {
             secuenciaCpu.clear()
             if (secuenciaUser.size > 0) {
                 secuenciaUser.clear()
@@ -107,12 +110,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun start() {
-        simularClickCpu()
-        mostrarPatronCPU()
+
+        GlobalScope.launch {
+            simularClickCpu()
+            delay(500)
+            mostrarPatronCPU()
+        }
+
         devolverClickBotones(binding.btnAmarillo,
             binding.btnAzul,
             binding.btnVerde,
             binding.btnRojo)
+
     }
 
     /**
@@ -123,18 +132,22 @@ class MainActivity : AppCompatActivity() {
      */
     fun onClickBotonesJuego(color: Colores) {
         secuenciaUser.add(color)
-        iluminarBoton(color)
-        comprobarClickUsuario(color, secuenciaUser.size - 1)
+
+            iluminarBoton(color)
+            comprobarClickUsuario(color, secuenciaUser.size - 1)
+
 
     }
 
 
     fun comprobarClickUsuario(color: Colores, ronda: Int) {
-        if (color == secuenciaCpu[ronda]) {
-            siguienteRonda()
-        } else {
-            end()
+
+        if (color != secuenciaCpu[ronda]) {
+            fallo = true
         }
+        siguienteRonda()
+
+
     }
 
     /**
@@ -142,6 +155,8 @@ class MainActivity : AppCompatActivity() {
      * Finaliza el juego y lo reinicia
      */
     fun end() {
+        score = 0
+        this.binding.txtScore.text = "Score:  $score"
         secuenciaUser.clear()
         secuenciaCpu.clear()
         fallo = true
@@ -149,18 +164,12 @@ class MainActivity : AppCompatActivity() {
             .setMessage("Has Perdido")
             .setPositiveButton("Ok") { _, _ ->
                 fallo = false
-                var rei = AlertDialog.Builder(this)
-                    .setMessage("Volver a jugar")
-                    .setPositiveButton("Sí") { _, _ ->
-                        devolverClickBotones(binding.btnAmarillo,
-                            binding.btnAzul,
-                            binding.btnVerde,
-                            binding.btnRojo)
-                        simularClickCpu()
-                        mostrarPatronCPU()
-
-                    }
-                rei.show()
+                devolverClickBotones(binding.btnAmarillo,
+                    binding.btnAzul,
+                    binding.btnVerde,
+                    binding.btnRojo)
+                simularClickCpu()
+                mostrarPatronCPU()
             }
         dialogo.show()
     }
@@ -168,21 +177,42 @@ class MainActivity : AppCompatActivity() {
     /**
      * Método que se encarga de, en cada ronda, comprobar si el jugador se ha equivocado o no
      */
-    private fun siguienteRonda(){
+    private fun siguienteRonda() {
 
-        if(fallo){
+        if (fallo) {
             end()
-        }else{
-            score++
-            if(score > bestScore)
-                bestScore = score
+        } else {
 
-            this.binding.txtScore.text = "Score:  $score"
-            this.binding.txtBestScore.text = "Best Score: $bestScore"
-            simularClickCpu()
-            mostrarPatronCPU()
-            start()
+            if (secuenciaUser.size == secuenciaCpu.size) {
+                score++
+                if (score > bestScore)
+                    bestScore = score
+
+                this.binding.txtScore.text = "Score:  $score"
+                this.binding.txtBestScore.text = "Best Score: $bestScore"
+                secuenciaUser.clear()
+                simularClickCpu()
+                //Le quito el click a los botones de juego
+                quitarClickBotones(binding.btnAmarillo,
+                    binding.btnAzul,
+                    binding.btnVerde,
+                    binding.btnRojo)
+
+                //Muestro el patron del CPU
+                GlobalScope.launch {
+
+                    delay(400)
+                    mostrarPatronCPU()
+                }
+
+                //Le devuelvo el click a los botones de juego
+                devolverClickBotones(binding.btnAmarillo,
+                    binding.btnAzul,
+                    binding.btnVerde,
+                    binding.btnRojo)
+            }
         }
+
     }
 
 
@@ -228,7 +258,7 @@ class MainActivity : AppCompatActivity() {
         btn.setImageResource(colorEncendido)
         GlobalScope.launch {
             //Lo mantenemos los milisegundos que coincidan con la velocidad elegida
-            delay(velocidad!!.milis)
+            delay(400)
             //Volvemos a establecer src de la imageView como el boton de color apagado
             btn.setImageResource(colorApagado)
         }
@@ -244,28 +274,37 @@ class MainActivity : AppCompatActivity() {
     private fun mostrarPatronCPU() {
 
         GlobalScope.launch {
-            //Quitamos el click de los botones
-            quitarClickBotones(binding.btnAmarillo,
-                binding.btnAzul,
-                binding.btnVerde,
-                binding.btnRojo)
+            //Recorro la secuencia de la CPU
             for (color in secuenciaCpu) {
-                delay(400)
+                //Espero los milisegundos escogidos en el inicio
+                delay(velocidad!!.milis)
+                //Ilumino el boton
                 iluminarBoton(color)
+                //Espero los milisegundos escogidos en el inicio
+                delay(velocidad!!.milis)
+
+
+
             }
 
         }
-        devolverClickBotones(binding.btnAmarillo,
-            binding.btnAzul,
-            binding.btnVerde,
-            binding.btnRojo)
+
 
     }
 
 
+    /**
+     *
+     * Método que se encarga de añadir a la lista de Colores de
+     * la cpu a partir de un numero random,
+     *
+     */
     private fun simularClickCpu() {
+        //Genero el numero random
         var rnd = Random.nextInt(Velocidades.values().size)
+        //Recojo el color a partir del numero random
         var color = Colores.values()[rnd]
+        //Añado el color a la lista
         secuenciaCpu.add(color)
     }
 
