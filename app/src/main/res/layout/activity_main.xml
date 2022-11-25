@@ -31,9 +31,7 @@
                 android:src="@drawable/btn_azul_apagado"
                 android:backgroundTint="@null"
                 android:longClickable="false"
-                android:shadowDx="150"
-                android:clickable="true"
-                android:shadowDy="150" />
+                android:clickable="true"/>
 
             <ImageView
                 android:id="@+id/btnVerde"
@@ -42,9 +40,7 @@
                 android:src="@drawable/btn_verde_apagado"
                 android:backgroundTint="@null"
                 android:longClickable="false"
-                android:shadowDx="150"
-                android:clickable="true"
-                android:shadowDy="150" />
+                android:clickable="true"/>
         </LinearLayout>
 
         <LinearLayout
@@ -58,19 +54,16 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/btn_rojo_apagado"
                 android:longClickable="false"
-                android:shadowDx="150"
-                android:backgroundTint="@null"
-                android:shadowDy="150" />
+                android:clickable="true"
+                android:backgroundTint="@null"/>
 
             <ImageView
                 android:id="@+id/btnAmarillo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:src="@drawable/btn_amarillo_apagado"
                 android:backgroundTint="@null"
                 android:longClickable="false"
-                android:shadowDx="150"
-                android:shadowDy="150"
                 android:clickable="true"/>
 
 
@@ -78,18 +71,6 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:background="@drawable/centrro_colores"
-        android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
-        app:layout_constraintHorizontal_bias=".5"
-        app:layout_constraintStart_toStartOf="@id/linearLayoutCompat"
-        app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat"
-        app:layout_constraintVertical_bias="0.5" />
 
 
 
@@ -143,7 +124,7 @@
             android:orientation="vertical"
             android:padding="30dp">
             <TextView
-                android:id="@+id/txtMaxScore"
+                android:id="@+id/txtBestScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Max Score: "
