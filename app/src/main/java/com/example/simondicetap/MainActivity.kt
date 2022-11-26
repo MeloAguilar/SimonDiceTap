@@ -33,13 +33,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        /**
+         * Set OnCLick Botones Inicio
+         */
         binding.btnNormal.setOnClickListener { onClickBotonesInicio(1) }
         binding.btnLento.setOnClickListener { onClickBotonesInicio(2) }
-
         binding.btnRapido.setOnClickListener { onClickBotonesInicio(3) }
         binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
 
+        /**
+         * Set OnClick Botones Juego
+         */
         binding.btnAzul.setOnClickListener { onClickBotonesJuego(Colores.AZUL) }
         binding.btnAmarillo.setOnClickListener { onClickBotonesJuego(Colores.AMARILLO) }
         binding.btnVerde.setOnClickListener { onClickBotonesJuego(Colores.VERDE) }
@@ -48,6 +52,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        //Le quito al usuario la posibilidad de tocar los botones
+        // de juego para que no exista la posibilidad de que el
+        // usuario no pueda romper el juego añadiendo datos
+        // a su secuencia cuando no debe.
         quitarClickBotones(binding.btnAmarillo,
             binding.btnAzul,
             binding.btnVerde,
@@ -83,6 +91,7 @@ class MainActivity : AppCompatActivity() {
      *
      */
     fun onClickBotonesInicio(numBtn: Int) {
+        fallo = false
         if (secuenciaCpu.size > 0) {
             secuenciaCpu.clear()
             if (secuenciaUser.size > 0) {
@@ -117,7 +126,8 @@ class MainActivity : AppCompatActivity() {
             mostrarPatronCPU()
         }
 
-        devolverClickBotones(binding.btnAmarillo,
+        devolverClickBotones(
+            binding.btnAmarillo,
             binding.btnAzul,
             binding.btnVerde,
             binding.btnRojo)
@@ -140,6 +150,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     *
+     * Método que, dado un entero y un objeto enum Colores, comprueba la MutableList<Colores>
+     * secuenciaUser en la posicion pasada como parámetro, establece el
+     *
+     */
     fun comprobarClickUsuario(color: Colores, ronda: Int) {
 
         if (color != secuenciaCpu[ronda]) {
@@ -156,22 +172,19 @@ class MainActivity : AppCompatActivity() {
      */
     fun end() {
         score = 0
-        this.binding.txtScore.text = "Score:  $score"
+        //Reinicio el TextView que contiene el score
+        binding.txtScore.text = "Score:  $score"
+        //Reinicio las secuencias de los jugadores
         secuenciaUser.clear()
         secuenciaCpu.clear()
-        fallo = true
+        //Muestro un diálogo al usuario para indicar que ha perdido
         var dialogo = AlertDialog.Builder(this)
             .setMessage("Has Perdido")
             .setPositiveButton("Ok") { _, _ ->
-                fallo = false
-                devolverClickBotones(binding.btnAmarillo,
-                    binding.btnAzul,
-                    binding.btnVerde,
-                    binding.btnRojo)
-                simularClickCpu()
-                mostrarPatronCPU()
+
             }
         dialogo.show()
+
     }
 
     /**
@@ -179,17 +192,24 @@ class MainActivity : AppCompatActivity() {
      */
     private fun siguienteRonda() {
 
+        //Si fallo = true llamo a la funcion end
         if (fallo) {
             end()
+        //Si no
         } else {
 
+            //Consulto si el tamaño de las listas es sigual
             if (secuenciaUser.size == secuenciaCpu.size) {
+                //Sumo un punto al score del usuario
                 score++
+                //Si las rondas conseguidas por el usuario son mayores que las de la mejor puntuacion
                 if (score > bestScore)
+                    //Ahora la mayor puntuacion es la del usuario
                     bestScore = score
-
+                //Establezco el atributo text de los TextView pertenecientes a las puntuaciones
                 this.binding.txtScore.text = "Score:  $score"
                 this.binding.txtBestScore.text = "Best Score: $bestScore"
+                //Limpio la secuencia del usuario y simulo un click para el cpu
                 secuenciaUser.clear()
                 simularClickCpu()
                 //Le quito el click a los botones de juego
@@ -200,8 +220,9 @@ class MainActivity : AppCompatActivity() {
 
                 //Muestro el patron del CPU
                 GlobalScope.launch {
-
+                    //Realizo un delay pequeño para que no se solape con la pulsacion del jugador
                     delay(400)
+                    //Muestro el ppatron de la cpu
                     mostrarPatronCPU()
                 }
 
@@ -232,9 +253,7 @@ class MainActivity : AppCompatActivity() {
         var btn = binding.btnVerde
         //Según el color que entre como paráetro se estableceran las variables
         when (color) {
-            //Si color es ROJO
             Colores.ROJO -> {
-                //Se cambia la referencia del drawable
                 colorApagado = R.drawable.btn_rojo_apagado
                 colorEncendido = R.drawable.btn_rojo_encendido
                 btn = binding.btnRojo
@@ -257,7 +276,7 @@ class MainActivity : AppCompatActivity() {
         //Se establece el color encendido del boton
         btn.setImageResource(colorEncendido)
         GlobalScope.launch {
-            //Lo mantenemos los milisegundos que coincidan con la velocidad elegida
+            //Lo mantenemos los 400 milisegundos
             delay(400)
             //Volvemos a establecer src de la imageView como el boton de color apagado
             btn.setImageResource(colorApagado)
