@@ -6,13 +6,10 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.simondicetap.databinding.ActivityMainBinding
-//Gracias a esta librería tenemos acceso a las vistas de nuestro layout activity_main
-
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -207,8 +204,8 @@ class MainActivity : AppCompatActivity() {
                     //Ahora la mayor puntuacion es la del usuario
                     bestScore = score
                 //Establezco el atributo text de los TextView pertenecientes a las puntuaciones
-                this.binding.txtScore.text = "Score:  $score"
-                this.binding.txtBestScore.text = "Best Score: $bestScore"
+                binding.txtScore.text = "Score:  $score"
+                binding.txtBestScore.text = "Best Score: $bestScore"
                 //Limpio la secuencia del usuario y simulo un click para el cpu
                 secuenciaUser.clear()
                 simularClickCpu()
