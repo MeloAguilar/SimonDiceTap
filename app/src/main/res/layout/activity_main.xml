@@ -7,7 +7,30 @@
     android:layout_height="match_parent"
     android:background="@color/grey"
     tools:context=".MainActivity">
-
+<ImageButton
+    android:id="@+id/btnAtras"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintHorizontal_bias=".05"
+    app:layout_constraintBottom_toTopOf="@+id/linearLayoutCompat"
+    android:src="@drawable/arrow_back_icon"
+    android:background="@color/grey"/>
+    <TextView
+        android:text=""
+        android:textSize="25sp"
+        android:textColor="@color/black"
+        android:id="@+id/tvNickUser"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintHorizontal_bias=".9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
+        app:layout_constraintStart_toEndOf="@+id/btnAtras"
+        app:layout_constraintEnd_toEndOf="parent"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayoutCompat"
         android:layout_width="wrap_content"
@@ -74,6 +97,9 @@
 
     <ImageView
         app:layout_constraintVertical_bias=".5"
+        android:scaleY=".8"
+        android:scaleX=".8"
+        android:clickable="true"
         app:layout_constraintTop_toTopOf="@id/linearLayoutCompat"
         app:layout_constraintBottom_toBottomOf="@id/linearLayoutCompat"
         app:layout_constraintEnd_toEndOf="@id/linearLayoutCompat"
@@ -110,7 +136,7 @@
                 android:id="@+id/txtScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Score: "
+                android:text="Score: 0"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
@@ -139,7 +165,7 @@
                 android:id="@+id/txtBestScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Max Score: "
+                android:text="Best Score: 0"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
