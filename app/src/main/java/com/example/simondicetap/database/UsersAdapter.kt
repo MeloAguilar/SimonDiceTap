@@ -8,14 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.simondicetap.R
 
 class UsersAdapter(
-    val tasks: List<UserEntity>,
+    val users: List<UserEntity>,
     val checkUser: (UserEntity) -> Unit,
     val deleteUser: (UserEntity) -> Unit) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
 
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = tasks[position]
+        val item = users[position]
         holder.bind(item, checkUser, deleteUser)
     }
 
@@ -26,16 +26,16 @@ class UsersAdapter(
     }
 
     override fun getItemCount(): Int {
-        return tasks.size
+        return users.size
     }
 
 
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvTask = view.findViewById<TextView>(R.id.tvUser)
+        val tvUser = view.findViewById<TextView>(R.id.tvUser)
         val tvScore = view.findViewById<TextView>(R.id.tvScore)
         fun bind(task: UserEntity, checkTask: (UserEntity) -> Unit, deleteTask: (UserEntity) -> Unit) {
-            tvTask.text = task.nickname
+            tvUser.text = task.nickname
             tvScore.text = task.score.toString()
             tvScore.setOnClickListener{checkTask(task)}
             itemView.setOnClickListener { deleteTask(task) }

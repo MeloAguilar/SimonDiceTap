@@ -1,7 +1,7 @@
 package com.example.simondicetap
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import com.example.simondicetap.database.UserDatabase
 
 class SimonSaysApp : Application() {
@@ -11,6 +11,6 @@ class SimonSaysApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        SimonSaysApp.database = Room.databaseBuilder(this, UserDatabase::class.java, "users-db").build()
+        database = Room.databaseBuilder(this, UserDatabase::class.java, "myusers-db").build()
     }
 }

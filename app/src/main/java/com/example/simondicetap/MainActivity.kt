@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.simondicetap.database.UserEntity
 import com.example.simondicetap.databinding.ActivityMainBinding
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.*
 //Gracias a esta librería tenemos acceso a las vistas de nuestro layout activity_main
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 
@@ -25,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     var secuenciaUser: MutableList<Colores> = mutableListOf()
     var score: Int = 0
     var bestScore: Int = 0
+    lateinit var user: UserEntity
+    lateinit var bundle: Bundle
 
     var pausa: Boolean = true
     lateinit var binding: ActivityMainBinding
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        bundle = intent.extras!!
 
         binding.btnAtras.setOnClickListener { clickBtnAtras() }
 
@@ -53,24 +53,30 @@ class MainActivity : AppCompatActivity() {
         // a su secuencia cuando no debe.
         quitarClickBotones()
 
-        getAndShowNick()
+
     }
 
 
     /**
-     * Método que recibe el intent que llega del login,
-     * recoge el bundle
+     * Método que recibe el intent que llega del login
      */
-    fun getAndShowNick(){
-        val bundle = intent.extras
-        val nick = bundle?.get("INTENT_NICK")
-        binding.tvNickUser.text = nick.toString()
+    private fun getUserById() = runBlocking {
+        launch {
+            user = UserEntity()
+            var id: Long = bundle.get("INTENT_NICK") as Long
+            user = SimonSaysApp.database.userDao().getUserById(id)
+
+        }
+
+
+        binding.tvNickUser.text = user.nickname
     }
 
-    fun clickBtnAtras(){
+
+    fun clickBtnAtras() {
 
         val intent = Intent(this, Login::class.java)
-        startActivity(intent)
+
     }
 
     fun setClickBotonesInicio() {
@@ -87,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * Set OnClick Botones Juego
          */
+        GlobalScope.launch { getUserById() }
         binding.btnAzul.setOnClickListener { onClickBotonesJuego(Colores.AZUL) }
         binding.btnAmarillo.setOnClickListener { onClickBotonesJuego(Colores.AMARILLO) }
         binding.btnVerde.setOnClickListener { onClickBotonesJuego(Colores.VERDE) }
@@ -330,7 +337,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
     }
 
 
@@ -352,8 +358,6 @@ class MainActivity : AppCompatActivity() {
                 delay(velocidad!!.milis)
 
             }
-
-
 
 
         }
