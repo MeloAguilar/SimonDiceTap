@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     android:background="@color/grey"
     tools:context=".MainActivity">
+
+    <View
+        android:background="@color/grey"
+        android:layout_width="16dp"
+        android:layout_height="396dp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
+        app:layout_constraintStart_toStartOf="@+id/linearLayoutCompat"
+        app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat" />
 <ImageButton
     android:id="@+id/btnAtras"
     android:layout_width="wrap_content"
@@ -18,19 +27,7 @@
     app:layout_constraintBottom_toTopOf="@+id/linearLayoutCompat"
     android:src="@drawable/arrow_back_icon"
     android:background="@color/grey"/>
-    <TextView
-        android:text=""
-        android:textSize="25sp"
-        android:textColor="@color/black"
-        android:id="@+id/tvNickUser"
-        app:layout_constraintVertical_bias="0.05"
-        app:layout_constraintHorizontal_bias=".9"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
-        app:layout_constraintStart_toEndOf="@+id/btnAtras"
-        app:layout_constraintEnd_toEndOf="parent"/>
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayoutCompat"
         android:layout_width="wrap_content"
@@ -46,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_weight="1"
+            android:layout_weight="0"
             >
 
             <ImageView
@@ -70,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_weight="0">
 
             <ImageView
                 android:layout_weight="1"
@@ -96,18 +93,18 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ImageView
-        app:layout_constraintVertical_bias=".5"
-        android:scaleY=".8"
-        android:scaleX=".8"
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:clickable="true"
-        app:layout_constraintTop_toTopOf="@id/linearLayoutCompat"
+        android:scaleX=".8"
+        android:scaleY=".8"
+        android:src="@drawable/centrro_colores"
         app:layout_constraintBottom_toBottomOf="@id/linearLayoutCompat"
         app:layout_constraintEnd_toEndOf="@id/linearLayoutCompat"
         app:layout_constraintStart_toStartOf="@id/linearLayoutCompat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/centrro_colores"
-        />
+        app:layout_constraintTop_toTopOf="@id/linearLayoutCompat"
+        app:layout_constraintVertical_bias=".5" />
 
 
 
@@ -169,6 +166,7 @@
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/white"/>
+
             <Button
                 android:id="@+id/btnNormal"
                 android:layout_width="wrap_content"

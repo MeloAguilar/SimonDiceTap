@@ -3,6 +3,7 @@ package com.example.simondicetap
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +22,9 @@ import kotlin.random.Random
  */
 class MainActivity : AppCompatActivity() {
 
+
+    private lateinit var mp: MediaPlayer
+
     //Numero de rpndas
     private var rondas = 0
 
@@ -36,14 +40,16 @@ class MainActivity : AppCompatActivity() {
     //Lista de colores que representa los botones que toco el usuario
     var secuenciaUser: MutableList<Colores> = mutableListOf()
 
+
     //Puntuacion del usuario
     var score: Int = 0
 
-    //Máxima puntuacion registrada
-    var bestScore: Int = 0
 
     //Usuario actual
     lateinit var user: UserEntity
+
+    //Mejor usuario
+    lateinit var bestUser: UserEntity
 
     //Datos que vienen desde la activity Login
     lateinit var bundle: Bundle
@@ -54,17 +60,22 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
 
+        //Instancio el binding conel layoutInflater de la activity actual
         binding = ActivityMainBinding.inflate(layoutInflater)
+        //Establezco que el atributo root, que contiene la ruta de activity_main.xml
+        //Serña lo que se verá en pantalla
         setContentView(binding.root)
 
 
 
+        //Establezco el onclick del boton que nos da la opcion de volver a login
         binding.btnAtras.setOnClickListener { clickBtnAtras() }
 
 
 
 
 
+        //Establezco lo que haran los botones de juego y de inicio
         setClickBotonesJuego()
         setClickBotonesInicio()
 
@@ -85,16 +96,22 @@ class MainActivity : AppCompatActivity() {
      * introducir este en la base de datos room
      */
     private fun getUserFromLogin() {
+        //Recojo los extras del intent
         bundle = intent.extras!!
+        //Establezco que el nick del usuario será un extra con el nombre "INTENT_NICK"
+        //No se porque perso cuando le digo getString no me devuelve nada, aunque estoy 100%seguro de qye es un String
         var nick: String = bundle.get("INTENT_NICK").toString()
+        //Insancio el usuario
         user = UserEntity(nickname = nick)
-        binding.tvNickUser.text = user.nickname
-        GlobalScope.launch { addUser(user) }
-
+        GlobalScope.launch {
+            //Añado el usuario a la base de datos y recojo el usuario con mayor puntuación
+            addUser(user)
+            GetMaxScore()
+        }
     }
 
     /**
-     * Corrutina que se encarga de añadir el usuario actual a la base de datos
+     * Método que se encarga de añadir el usuario actual a la base de datos
      *
      */
     private fun addUser(userEntity: UserEntity) = runBlocking {
@@ -104,6 +121,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Método que envia una petición update para actualizar el score del usuario actual segun sea necesario
+     */
     private fun UpdateScore(user: UserEntity) = runBlocking {
         launch {
             SimonSaysApp.database.userDao().updateScore(user)
@@ -111,6 +131,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    /**
+     * Método que establece la mejor puntuación de la base de datos
+     */
+    private fun GetMaxScore() = runBlocking {
+        launch {
+            bestUser = SimonSaysApp.database.userDao().getMaxScore();
+        }
+    }
 
     /**
      * Método que controla el click del ImageButton
@@ -146,13 +175,16 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Simon Says")
             .setMessage("Elige la rapidez de los cambios de color")
             .setPositiveButton("Ok") { _, _ ->
-                binding.btnNormal.setOnClickListener { onClickBotonesInicio(1) }
-                binding.btnLento.setOnClickListener { onClickBotonesInicio(2) }
-                binding.btnRapido.setOnClickListener { onClickBotonesInicio(3) }
-                binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
+            //No hago nada ya que si el usuario le
+            // diese sin querer a fuera del alertlos
+            // botones se quedarian inutiles
             }
         dialog.show()
         dialog.setCancelable(false)
+        binding.btnNormal.setOnClickListener { onClickBotonesInicio(1) }
+        binding.btnLento.setOnClickListener { onClickBotonesInicio(2) }
+        binding.btnRapido.setOnClickListener { onClickBotonesInicio(3) }
+        binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
     }
 
     fun setClickBotonesJuego() {
@@ -199,12 +231,14 @@ class MainActivity : AppCompatActivity() {
      */
     fun onClickBotonesInicio(numBtn: Int) {
         fallo = false
+        //Por si el usuario le da cuando ya ha comenzado la partida
         if (secuenciaCpu.size > 0) {
             secuenciaCpu.clear()
             if (secuenciaUser.size > 0) {
                 secuenciaUser.clear()
             }
         }
+        //PAra establecer la velocidad de juego
         when (numBtn) {
             0 -> {
                 var rnd = Random.nextInt(Velocidades.values().size)
@@ -258,6 +292,8 @@ class MainActivity : AppCompatActivity() {
     fun onClickBotonesJuego(color: Colores) {
         //añado el color a la lista de colores del usuario
         secuenciaUser.add(color)
+        //Directamente si la longitud de la secuencia del usuario es mayor al numero de rondas
+        //iremos directamente al
         if (secuenciaUser.size - 1 > rondas) {
             fallo = true
             end()
@@ -301,8 +337,11 @@ class MainActivity : AppCompatActivity() {
     fun end() {
 
 
+        //Si el score que el usuario ha conseguido en esta partida
+
         if (score > user.score) {
             user.score = score
+            //Se actualizará su atributo score dentrp de la base de datos
             GlobalScope.launch {
                 UpdateScore(user)
             }
@@ -335,7 +374,7 @@ class MainActivity : AppCompatActivity() {
             end()
 
 
-            //Si no
+
         } else {
 
             //Consulto si el tamaño de las listas es sigual
@@ -345,28 +384,31 @@ class MainActivity : AppCompatActivity() {
                 rondas++
                 score++
                 //Si las rondas conseguidas por el usuario son mayores que las de la mejor puntuacion
-                if (score > bestScore)
+                if (score > bestUser.score)
                 //Ahora la mayor puntuacion es la del usuario
-                    bestScore = score
+                    bestUser = user
                 //Establezco el atributo text de los TextView pertenecientes a las puntuaciones
-                this.binding.txtScore.text = "Score:  $score"
-                this.binding.txtBestScore.text = "Best Score: $bestScore"
+                this.binding.txtScore.text = "Score:  ${user.score} \n ${user.nickname}"
+                this.binding.txtBestScore.text =
+                    "Best Score: ${bestUser.score} \n ${bestUser.nickname}"
 
+                /**
+                 * Toda esta zona no me hace ni puto caso.
+                 * Funciona cuando quiere y cuando quiere no
+                 */
                 //Limpio la secuencia del usuario y simulo un click para el cpu
                 //añado un nuevo color a la lista de la cpu
                 simularClickCpu()
 
 
-                runBlocking {
-                    //Le quito el click a los botones de juego
-                    quitarClickBotones()
-                    //Muestro el patron del CPU
-                    mostrarPatronCPU()
-launch {
-     }
+                //Le quito el click a los botones de juego
+                quitarClickBotones()
+                //Muestro el patron del CPU
+                mostrarPatronCPU()
 
 
-                }
+                //Devuelvo el click a los botones
+                devolverClickBotones()
 
 
             }
@@ -383,6 +425,9 @@ launch {
      *
      */
     private fun iluminarBoton(color: Colores) = runBlocking {
+
+        //Recogemos el id del sonido
+        var idRaw = R.raw.boton_verde_sonido
         //Referencia al drawable que contiene el boton apagado
         var colorApagado = R.drawable.btn_verde_apagado
         //Referencia al drawable que contiene el boton encendido
@@ -395,29 +440,36 @@ launch {
                 colorApagado = R.drawable.btn_rojo_apagado
                 colorEncendido = R.drawable.btn_rojo_encendido
                 btn = binding.btnRojo
+                idRaw = R.raw.boton_rojo_sonido
             }
             Colores.AZUL -> {
                 colorApagado = R.drawable.btn_azul_apagado
                 colorEncendido = R.drawable.btn_azul_encendido
                 btn = binding.btnAzul
+                idRaw = R.raw.boton_azul_sonido
             }
             Colores.AMARILLO -> {
                 colorApagado = R.drawable.btn_amarillo_apagado
                 colorEncendido = R.drawable.btn_amarillo_encendido
                 btn = binding.btnAmarillo
+                idRaw = R.raw.boton_amarillo_sonido
             }
             else -> {}
         }
         launch {
+            mp = MediaPlayer.create(this@MainActivity, idRaw)
 
+            //Inicio el sonido
+            mp.start()
             //Se establece el color encendido del boton
             btn.setImageResource(colorEncendido)
-
 
             delay(velocidad!!.milis)
             //Volvemos a establecer src de la imageView como el boton de color apagado
             btn.setImageResource(colorApagado)
 
+            delay(100)
+            mp.reset()
         }
 
 
@@ -436,24 +488,24 @@ launch {
             .setMessage("Observa la secuencia!!")
             .setPositiveButton("Ok") { _, _ ->
                 try {
-                    runBlocking {
-                        launch {
-                            delay(400)
-                            //Recorro la secuencia de la CPU
-                            for (color in secuenciaCpu) {
-                                //Espero los milisegundos escogidos en el inicio
-                                delay(velocidad!!.milis)
-                                //Ilumino el boton
-                                iluminarBoton(color)
-                                delay(velocidad!!.milis)
 
-                            }
-
+                    GlobalScope.launch {
+                        delay(500)
+                        //Recorro la secuencia de la CPU
+                        for (color in secuenciaCpu) {
+                            //Espero los milisegundos escogidos en el inicio
+                            delay(velocidad!!.milis / 2)
+                            //Ilumino el boton
+                            iluminarBoton(color)
+                            delay(velocidad!!.milis / 2)
 
                         }
 
+
                     }
-                }catch(_: InterruptedException){
+
+
+                } catch (_: InterruptedException) {
                     //No hacemos nada
                 }
 

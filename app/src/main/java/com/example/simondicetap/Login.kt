@@ -81,7 +81,7 @@ class Login : AppCompatActivity() {
     }
 
     fun setUpRecyclerView(tasks: List<UserEntity>) {
-        adapter = UsersAdapter(tasks, { updateUser(it) }, { deleteUser(it) })
+        adapter = UsersAdapter(tasks)
         recyclerView = findViewById(R.id.contenedorScores)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
