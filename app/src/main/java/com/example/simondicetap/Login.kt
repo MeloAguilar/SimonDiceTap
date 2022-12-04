@@ -34,21 +34,23 @@ class Login : AppCompatActivity() {
         }
         loginBinding.btnIniciar.setOnClickListener {
             clickInicio()
-        }
-
-    }
-
-    private fun addUser(userEntity: UserEntity) = runBlocking {
-        launch {
-            val id = SimonSaysApp.database.userDao().insertUser(userEntity)
-            val recoveryUser = SimonSaysApp.database.userDao().getUserById(id)
-
-            users.add(recoveryUser)
-            adapter.notifyItemInserted(users.size)
             clearFocus()
             hideKeyboard()
         }
+
     }
+
+        private fun addUser(userEntity: UserEntity) = runBlocking {
+            launch {
+                val id = SimonSaysApp.database.userDao().insertUser(userEntity)
+                val recoveryUser = SimonSaysApp.database.userDao().getUserById(id)
+
+                users.add(recoveryUser)
+                adapter.notifyItemInserted(users.size)
+                clearFocus()
+                hideKeyboard()
+            }
+        }
 
     fun getUsers() = runBlocking {
         launch {
@@ -100,11 +102,11 @@ class Login : AppCompatActivity() {
 
     fun clickInicio() {
         val intent = Intent(this, MainActivity::class.java)
-        var user = UserEntity(nickname = loginBinding.etNick.text.toString())
+
         if (loginBinding.etNick.text.isNotEmpty()) {
 
             GlobalScope.launch {
-                intent.putExtra("idUser", user)
+                intent.putExtra("INTENT_NICK", loginBinding.etNick.text.toString())
                 startActivity(intent)
             }
         }

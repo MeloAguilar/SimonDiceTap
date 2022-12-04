@@ -13,20 +13,32 @@ import kotlinx.coroutines.*
 
 import kotlin.random.Random
 
-
+/**
+ *
+ * Activity que contiene la lógica del juego
+ *
+ */
 class MainActivity : AppCompatActivity() {
 
+    //Numero de rpndas
     private var rondas = 0
+    //Booleano que muestra cuando finaliza el juego
     private var fallo = false
+    //velocidad del cambio de color
     var velocidad: Velocidades? = null
+    //Lista de colores que representa los botones que toco el CPU
     var secuenciaCpu: MutableList<Colores> = mutableListOf()
+    //Lista de colores que representa los botones que toco el usuario
     var secuenciaUser: MutableList<Colores> = mutableListOf()
+    //Puntuacion del usuario
     var score: Int = 0
+    //Máxima puntuacion registrada
     var bestScore: Int = 0
+    //Usuario actual
     lateinit var user: UserEntity
+    //Datos que vienen desde la activity Login
     lateinit var bundle: Bundle
 
-    var pausa: Boolean = true
     lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        bundle = intent.extras!!
+
 
         binding.btnAtras.setOnClickListener { clickBtnAtras() }
 
@@ -56,21 +68,32 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun getUserFromLogin(){
+        bundle = intent.extras!!
+        var nick : String = bundle.get("INTENT_NICK").toString()
+        user = UserEntity(nickname = nick)
+        GlobalScope.launch { addUser(user) }
+
+    }
 
     /**
-     * Método que recibe el intent que llega del login
+     * Corrutina que se encarga de añadir el usuario actual a la base de datos
+     *
      */
-    private fun getUserById() = runBlocking {
+    private fun addUser(userEntity: UserEntity) = runBlocking {
         launch {
-            user = UserEntity()
-            var id: Long = bundle.get("INTENT_NICK") as Long
+            val id : Long = SimonSaysApp.database.userDao().insertUser(userEntity)
             user = SimonSaysApp.database.userDao().getUserById(id)
+        }
+    }
+
+    private fun UpdateScore(user : UserEntity) = runBlocking{
+        launch {
+            SimonSaysApp.database.userDao().updateScore(user)
 
         }
-
-
-        binding.tvNickUser.text = user.nickname
     }
+
 
 
     fun clickBtnAtras() {
@@ -93,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * Set OnClick Botones Juego
          */
-        GlobalScope.launch { getUserById() }
+        getUserFromLogin()
         binding.btnAzul.setOnClickListener { onClickBotonesJuego(Colores.AZUL) }
         binding.btnAmarillo.setOnClickListener { onClickBotonesJuego(Colores.AMARILLO) }
         binding.btnVerde.setOnClickListener { onClickBotonesJuego(Colores.VERDE) }
@@ -168,10 +191,10 @@ class MainActivity : AppCompatActivity() {
      * muestra el patron del cpu.
      *
      */
-    fun start() {
+    fun start() = runBlocking{
 
         //Corruntina
-        GlobalScope.launch {
+        launch {
             //Llamo al método que añade un color a secuenciaCpu
             simularClickCpu()
             delay(500)
@@ -223,11 +246,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+
     /**
      * Método que se lanza cuando el usuario falla en una pulsación.
      * Finaliza el juego y lo reinicia
      */
     fun end() {
+        if(score>user.score) {
+            user.score = score
+            UpdateScore(user)
+        }
         rondas = 0
         score = 0
         //Reinicio el TextView que contiene el score
@@ -298,7 +327,7 @@ class MainActivity : AppCompatActivity() {
      *
      *
      */
-    private fun iluminarBoton(color: Colores) {
+    private fun iluminarBoton(color: Colores) = runBlocking {
         //Referencia al drawable que contiene el boton apagado
         var colorApagado = R.drawable.btn_verde_apagado
         //Referencia al drawable que contiene el boton encendido
@@ -324,7 +353,7 @@ class MainActivity : AppCompatActivity() {
             }
             else -> {}
         }
-        GlobalScope.launch {
+        launch {
 
             //Se establece el color encendido del boton
             btn.setImageResource(colorEncendido)
