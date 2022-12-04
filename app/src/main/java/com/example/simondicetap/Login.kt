@@ -24,6 +24,7 @@ class Login : AppCompatActivity() {
     var maxScore = 0
 
     lateinit var loginBinding: ActivityLoginBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loginBinding = ActivityLoginBinding.inflate(layoutInflater)
@@ -33,13 +34,19 @@ class Login : AppCompatActivity() {
             getUsers()
         }
         loginBinding.btnIniciar.setOnClickListener {
+            hideKeyboard()
             clickInicio()
             clearFocus()
-            hideKeyboard()
+
         }
 
     }
 
+    override fun onNavigateUp(): Boolean {
+        users = ArrayList()
+        GlobalScope.launch { getUsers() }
+        return super.onNavigateUp()
+    }
         private fun addUser(userEntity: UserEntity) = runBlocking {
             launch {
                 val id = SimonSaysApp.database.userDao().insertUser(userEntity)

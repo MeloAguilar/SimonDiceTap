@@ -1,6 +1,7 @@
 package com.example.simondicetap
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -22,20 +23,28 @@ class MainActivity : AppCompatActivity() {
 
     //Numero de rpndas
     private var rondas = 0
+
     //Booleano que muestra cuando finaliza el juego
     private var fallo = false
+
     //velocidad del cambio de color
     var velocidad: Velocidades? = null
+
     //Lista de colores que representa los botones que toco el CPU
     var secuenciaCpu: MutableList<Colores> = mutableListOf()
+
     //Lista de colores que representa los botones que toco el usuario
     var secuenciaUser: MutableList<Colores> = mutableListOf()
+
     //Puntuacion del usuario
     var score: Int = 0
+
     //Máxima puntuacion registrada
     var bestScore: Int = 0
+
     //Usuario actual
     lateinit var user: UserEntity
+
     //Datos que vienen desde la activity Login
     lateinit var bundle: Bundle
 
@@ -68,10 +77,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getUserFromLogin(){
+
+    /**
+     * Método que se encarga de recoger el string que viene del activity Login
+     * establece que el usuario que jugará será ese,y
+     * llama a la corrutina que se encarga de llamar al dao para
+     * introducir este en la base de datos room
+     */
+    private fun getUserFromLogin() {
         bundle = intent.extras!!
-        var nick : String = bundle.get("INTENT_NICK").toString()
+        var nick: String = bundle.get("INTENT_NICK").toString()
         user = UserEntity(nickname = nick)
+        binding.tvNickUser.text = user.nickname
         GlobalScope.launch { addUser(user) }
 
     }
@@ -82,12 +99,12 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addUser(userEntity: UserEntity) = runBlocking {
         launch {
-            val id : Long = SimonSaysApp.database.userDao().insertUser(userEntity)
+            val id: Long = SimonSaysApp.database.userDao().insertUser(userEntity)
             user = SimonSaysApp.database.userDao().getUserById(id)
         }
     }
 
-    private fun UpdateScore(user : UserEntity) = runBlocking{
+    private fun UpdateScore(user: UserEntity) = runBlocking {
         launch {
             SimonSaysApp.database.userDao().updateScore(user)
 
@@ -95,21 +112,47 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
+    /**
+     * Método que controla el click del ImageButton
+     * con id btnAtras
+     */
     fun clickBtnAtras() {
-
-        val intent = Intent(this, Login::class.java)
-
+        //Si el user no tiene id se llamará al método que
+        //obtiene el usuario del activity Login y establecerá el
+        //correspondiente
+        if (user.id == 0)
+            getUserFromLogin()
+        //Después llamaremos al método que finaliza el juego,
+        // para registrar la puntuacion del usuario si este le diese en
+        // medio de una partida en la que llevase una alta puntuación
+        end()
+        //Creamos el intent para viajar de nuevo al login
+        var intent = Intent(this, Login::class.java)
+        //Establezco que se borrará toda la pila de actividades
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        //Le decimos a la App que comience una nueva actividad
+        //y le mandamos el intent que nos devuelve al Login
+        startActivity(intent)
     }
 
+    /**
+     * Método que se encarga de darle la accion necesaria a los botones de inicio
+     */
     fun setClickBotonesInicio() {
         /**
          * Set OnCLick Botones Inicio
          */
-        binding.btnNormal.setOnClickListener { onClickBotonesInicio(1) }
-        binding.btnLento.setOnClickListener { onClickBotonesInicio(2) }
-        binding.btnRapido.setOnClickListener { onClickBotonesInicio(3) }
-        binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
+        var dialog = AlertDialog.Builder(this)
+            .setTitle("Simon Says")
+            .setMessage("Elige la rapidez de los cambios de color")
+            .setPositiveButton("Ok") { _, _ ->
+                binding.btnNormal.setOnClickListener { onClickBotonesInicio(1) }
+                binding.btnLento.setOnClickListener { onClickBotonesInicio(2) }
+                binding.btnRapido.setOnClickListener { onClickBotonesInicio(3) }
+                binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
+            }
+        dialog.show()
+        dialog.setCancelable(false)
     }
 
     fun setClickBotonesJuego() {
@@ -191,13 +234,13 @@ class MainActivity : AppCompatActivity() {
      * muestra el patron del cpu.
      *
      */
-    fun start() = runBlocking{
+    fun start() = runBlocking {
 
         //Corruntina
         launch {
             //Llamo al método que añade un color a secuenciaCpu
             simularClickCpu()
-            delay(500)
+            delay(velocidad!!.milis)
             //Llamo al método que se encarga de recorrer secuenciaCpu y llamar al método
             mostrarPatronCPU()
 
@@ -219,8 +262,12 @@ class MainActivity : AppCompatActivity() {
             fallo = true
             end()
         }
-        //Ilumino el boton
-        iluminarBoton(color)
+        GlobalScope.launch {
+            //Ilumino el boton
+            iluminarBoton(color)
+
+        }
+
         //Compruebo si el usuario lo hizo bien
         comprobarClickUsuario(color)
 
@@ -247,15 +294,18 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     /**
      * Método que se lanza cuando el usuario falla en una pulsación.
      * Finaliza el juego y lo reinicia
      */
     fun end() {
-        if(score>user.score) {
+
+
+        if (score > user.score) {
             user.score = score
-            UpdateScore(user)
+            GlobalScope.launch {
+                UpdateScore(user)
+            }
         }
         rondas = 0
         score = 0
@@ -282,9 +332,8 @@ class MainActivity : AppCompatActivity() {
 
         //Si fallo = true llamo a la funcion end
         if (fallo) {
-            GlobalScope.launch {
-                end()
-            }
+            end()
+
 
             //Si no
         } else {
@@ -302,18 +351,24 @@ class MainActivity : AppCompatActivity() {
                 //Establezco el atributo text de los TextView pertenecientes a las puntuaciones
                 this.binding.txtScore.text = "Score:  $score"
                 this.binding.txtBestScore.text = "Best Score: $bestScore"
+
                 //Limpio la secuencia del usuario y simulo un click para el cpu
                 //añado un nuevo color a la lista de la cpu
                 simularClickCpu()
-                //Le quito el click a los botones de juego
-                quitarClickBotones()
-
-                //Muestro el patron del CPU
-                mostrarPatronCPU()
 
 
+                runBlocking {
+                    //Le quito el click a los botones de juego
+                    quitarClickBotones()
+                    //Muestro el patron del CPU
+                    mostrarPatronCPU()
+launch {
+     }
 
-                devolverClickBotones()
+
+                }
+
+
             }
         }
 
@@ -376,20 +431,36 @@ class MainActivity : AppCompatActivity() {
      */
     private fun mostrarPatronCPU() {
 
-        GlobalScope.launch {
-            delay(400)
-            //Recorro la secuencia de la CPU
-            for (color in secuenciaCpu) {
-                //Espero los milisegundos escogidos en el inicio
-                delay(velocidad!!.milis)
-                //Ilumino el boton
-                iluminarBoton(color)
-                delay(velocidad!!.milis)
+        var dialogo = AlertDialog.Builder(this)
+            .setTitle("Simon Says")
+            .setMessage("Observa la secuencia!!")
+            .setPositiveButton("Ok") { _, _ ->
+                try {
+                    runBlocking {
+                        launch {
+                            delay(400)
+                            //Recorro la secuencia de la CPU
+                            for (color in secuenciaCpu) {
+                                //Espero los milisegundos escogidos en el inicio
+                                delay(velocidad!!.milis)
+                                //Ilumino el boton
+                                iluminarBoton(color)
+                                delay(velocidad!!.milis)
+
+                            }
+
+
+                        }
+
+                    }
+                }catch(_: InterruptedException){
+                    //No hacemos nada
+                }
+
 
             }
-
-
-        }
+            .setCancelable(false)
+        dialogo.show()
 
     }
 
