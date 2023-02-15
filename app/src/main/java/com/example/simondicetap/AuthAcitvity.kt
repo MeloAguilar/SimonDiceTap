@@ -16,7 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class Login : AppCompatActivity() {
+class AuthAcitvity : AppCompatActivity() {
 
     lateinit var recyclerView: RecyclerView
     lateinit var users: MutableList<UserEntity>

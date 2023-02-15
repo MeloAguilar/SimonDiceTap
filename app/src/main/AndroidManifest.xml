@@ -14,7 +14,7 @@
         android:theme="@style/Theme.SimonDiceTap"
         tools:targetApi="31">
         <activity
-            android:name=".Login"
+            android:name=".AuthAcitvity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

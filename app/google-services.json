@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "566522824765",
+    "project_id": "simondice-zupolla",
+    "storage_bucket": "simondice-zupolla.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566522824765:android:22322dd390cbfa0d42c254",
+        "android_client_info": {
+          "package_name": "com.example.simondicetap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566522824765-6qrm3o5os2f19iqomo0tt905onpqiu7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnpS2irtnzOspVxDcCnpt4MoEO_5rqT_I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "566522824765-6qrm3o5os2f19iqomo0tt905onpqiu7d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

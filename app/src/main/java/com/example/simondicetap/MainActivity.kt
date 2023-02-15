@@ -1,11 +1,8 @@
 package com.example.simondicetap
 
-import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.simondicetap.database.UserEntity
@@ -156,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         // medio de una partida en la que llevase una alta puntuación
         end()
         //Creamos el intent para viajar de nuevo al login
-        var intent = Intent(this, Login::class.java)
+        var intent = Intent(this, AuthAcitvity::class.java)
         //Establezco que se borrará toda la pila de actividades
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         //Le decimos a la App que comience una nueva actividad
