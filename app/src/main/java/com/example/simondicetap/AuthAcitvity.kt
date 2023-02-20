@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simondicetap.database.UserEntity
 import com.example.simondicetap.database.UsersAdapter
-import com.example.simondicetap.databinding.ActivityLoginBinding
+import com.example.simondicetap.databinding.ActivityAuthBinding
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -23,22 +23,23 @@ class AuthAcitvity : AppCompatActivity() {
     lateinit var adapter: UsersAdapter
     var maxScore = 0
 
-    lateinit var loginBinding: ActivityLoginBinding
+    lateinit var loginBinding: ActivityAuthBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loginBinding = ActivityLoginBinding.inflate(layoutInflater)
+        loginBinding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(loginBinding.root)
         users = ArrayList()
         GlobalScope.launch {
             getUsers()
         }
-        loginBinding.btnIniciar.setOnClickListener {
+        loginBinding.btnLogin.setOnClickListener {
             hideKeyboard()
             clickInicio()
             clearFocus()
 
         }
+        loginBinding
 
     }
 
