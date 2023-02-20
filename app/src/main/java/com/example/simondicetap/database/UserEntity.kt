@@ -1,6 +1,6 @@
 package com.example.simondicetap.database
 
-import android.os.Parcelable
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
