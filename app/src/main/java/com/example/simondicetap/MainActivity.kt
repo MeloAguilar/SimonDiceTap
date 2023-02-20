@@ -5,8 +5,10 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.simondicetap.firebase.UserFirebase
 import com.example.simondicetap.database.UserEntity
 import com.example.simondicetap.databinding.ActivityMainBinding
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 //Gracias a esta librería tenemos acceso a las vistas de nuestro layout activity_main
 
@@ -44,6 +46,12 @@ class MainActivity : AppCompatActivity() {
 
     //Usuario actual
     lateinit var user: UserEntity
+
+    //Usuario actual de firebase
+    lateinit var userFireBase: UserFirebase
+
+    //Mejor usuario de firebase
+    lateinit var bestFireBaseUser: UserFirebase
 
     //Mejor usuario
     lateinit var bestUser: UserEntity
@@ -86,6 +94,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    //metodo que recoge los datos del login y los establece en la activity
+
+
     /**
      * Método que se encarga de recoger el string que viene del activity Login
      * establece que el usuario que jugará será ese,y
@@ -99,10 +110,10 @@ class MainActivity : AppCompatActivity() {
         //No se porque perso cuando le digo getString no me devuelve nada, aunque estoy 100%seguro de qye es un String
         var nick: String = bundle.get("INTENT_NICK").toString()
         //Insancio el usuario
-        user = UserEntity(nickname = nick)
+        userFireBase = UserFirebase(nick,"********")
         GlobalScope.launch {
             //Añado el usuario a la base de datos y recojo el usuario con mayor puntuación
-            addUser(user)
+            //addUser(user)
             GetMaxScore()
         }
     }
@@ -129,14 +140,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+
+
+
+
     /**
      * Método que establece la mejor puntuación de la base de datos
      */
     private fun GetMaxScore() = runBlocking {
         launch {
-            bestUser = SimonSaysApp.database.userDao().getMaxScore();
+            //bestUser = SimonSaysApp.database.userDao().getMaxScore();
+            //recojo la puntacion del usuario de firebase
         }
+
+
     }
+
+    //metodo que se encarga de recoja el usuario con la puntuacion mas alta de firebase y la establece en la activity
+
 
     /**
      * Método que controla el click del ImageButton
