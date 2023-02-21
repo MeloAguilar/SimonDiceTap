@@ -191,15 +191,17 @@ class MainActivity : AppCompatActivity() {
         launch {
             db.collection("Usuarios").get()
                 .addOnSuccessListener { result ->
+                    var finalScore = bestFireBaseUser.getScore()
                     for (document in result) {
                         var testscore = document.data["score"].toString().toInt()
-                        if (testscore > bestFireBaseUser.getScore()) {
-                            bestFireBaseUser = UserFirebase(document.data["email"].toString(),document.data["password"].toString(), document.data["score"].toString().toInt())
+                        if (testscore > finalScore) {
+                            bestFireBaseUser = UserFirebase(document.data["email"].toString(),"*********", testscore)
+                            binding.txtBestScore.text = "Best: ${bestFireBaseUser.getScore() }"
                             binding.txtBestScoreName.text = bestFireBaseUser.getEmail().subSequence(0,6)
-                        }else{
-                            binding.txtBestScoreName.text = userFireBase.getEmail().subSequence(0,6)
+                            finalScore = testscore
                         }
                     }
+
                 }
                 .addOnFailureListener { exception ->
                     println("Error getting documents: $exception")

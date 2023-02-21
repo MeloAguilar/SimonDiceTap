@@ -188,7 +188,7 @@ class AuthAcitvity : AppCompatActivity() {
                         Log.d("TAG", "${document.id} => ${document.data}")
                     }
 
-                    users.sortBy { it.getScore() }
+                    users.sortWith(compareByDescending { it.getScore() })
                     setUpRecyclerView(users)
                 }
                 .addOnFailureListener { exception ->
