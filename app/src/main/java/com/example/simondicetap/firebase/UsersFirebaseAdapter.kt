@@ -33,7 +33,7 @@ class UsersFirebaseAdapter (
             val tvUser = view.findViewById<TextView>(R.id.tvUser)
             val tvScore = view.findViewById<TextView>(R.id.tvScore)
             fun bind(task: UserFirebase,) {
-                tvUser.text = task.getEmail()
+                tvUser.text = task.getEmail().subSequence(0,6)
                 tvScore.text = task.getScore().toString()
             }
         }

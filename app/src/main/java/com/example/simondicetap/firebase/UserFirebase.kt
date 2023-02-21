@@ -1,6 +1,7 @@
 package com.example.simondicetap.firebase
 
 public class UserFirebase {
+    private var id: String = ""
     private var score: Int = 0
     private var email: String = ""
     private var password: String = ""
@@ -40,6 +41,16 @@ public class UserFirebase {
         return this.email
     }
 
+
+
+    fun getId(): String {
+        return this.id
+    }
+
+
+    fun setId(id: String) {
+        this.id = id
+    }
     fun setEmail(email: String) {
         this.email = email
     }

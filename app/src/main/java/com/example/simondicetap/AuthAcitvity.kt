@@ -126,11 +126,16 @@ class AuthAcitvity : AppCompatActivity() {
                     "score" to 0
                 )
 
+                var userF = UserFirebase(email, password, 0)
                 //Recojo la colección de usuarios y añado el usuario si este no existía antes.
                 db.collection("Usuarios")
                     .add(userJ)
                     .addOnSuccessListener { documentReference ->
                         Log.d("TAG", "DocumentSnapshot added with ID: ${documentReference.id}")
+                        userF.setId(documentReference.id)
+                        val intent = Intent(this, MainActivity::class.java)
+                        intent.putExtra("INTENT_NICK", userF.getId())
+                        startActivity(intent)
                     }
                     .addOnFailureListener { e ->
                         Log.w("TAG", "Error adding document", e)
@@ -138,9 +143,7 @@ class AuthAcitvity : AppCompatActivity() {
                 //Registro correcto
                 val user = mAuth.currentUser
                 //Mandamos los datos a la pantalla principal
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("INTENT_NICK", email)
-                startActivity(intent)
+
                 //Si el usuario no se registra correctamente, se le muestra un mensaje de error
             } else {
                 Log.w("Error", "signInWithEmail:failure", task.exception)
@@ -174,11 +177,13 @@ class AuthAcitvity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { result ->
                     for (document in result) {
+                        var s = document.data["score"].toString()
                         val user = UserFirebase(
                             document.data["email"].toString(),
                             document.data["password"].toString(),
-                            document.data["score"].toString().toInt()
+                            s.toInt()
                         )
+                        user.setId(document.id)
                         users.add(user)
                         Log.d("TAG", "${document.id} => ${document.data}")
                     }
@@ -217,9 +222,9 @@ class AuthAcitvity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun updateUser(user: UserEntity) = runBlocking {
-
-    }
+   // private fun updateUser(user: UserEntity) = runBlocking {
+    //
+   // }
 
 
     //private fun deleteUser(it: UserEntity) = runBlocking {
