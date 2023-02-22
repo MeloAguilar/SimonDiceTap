@@ -1,13 +1,14 @@
 package com.example.simondicetap
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.simondicetap.firebase.UserFirebase
-import com.example.simondicetap.database.UserEntity
 import com.example.simondicetap.databinding.ActivityMainBinding
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 //Gracias a esta librería tenemos acceso a las vistas de nuestro layout activity_main
@@ -21,7 +22,7 @@ import kotlin.random.Random
  */
 class MainActivity : AppCompatActivity() {
 
-
+    val db = Firebase.firestore
     private lateinit var mp: MediaPlayer
 
     //Numero de rpndas
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
 
     //Usuario actual
-    lateinit var user: UserEntity
+    //lateinit var user: UserEntity
 
     //Usuario actual de firebase
     lateinit var userFireBase: UserFirebase
@@ -54,17 +55,19 @@ class MainActivity : AppCompatActivity() {
     lateinit var bestFireBaseUser: UserFirebase
 
     //Mejor usuario
-    lateinit var bestUser: UserEntity
+    //lateinit var bestUser: UserEntity
 
     //Datos que vienen desde la activity Login
     lateinit var bundle: Bundle
+
 
     lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
+        bestFireBaseUser = UserFirebase("0", "0", 0)
+        userFireBase = UserFirebase("0", "0", 0)
+        getUserFromLogin()
         //Instancio el binding conel layoutInflater de la activity actual
         binding = ActivityMainBinding.inflate(layoutInflater)
         //Establezco que el atributo root, que contiene la ruta de activity_main.xml
@@ -94,6 +97,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
+
+
     //metodo que recoge los datos del login y los establece en la activity
 
 
@@ -108,36 +114,69 @@ class MainActivity : AppCompatActivity() {
         bundle = intent.extras!!
         //Establezco que el nick del usuario será un extra con el nombre "INTENT_NICK"
         //No se porque perso cuando le digo getString no me devuelve nada, aunque estoy 100%seguro de qye es un String
-        var nick: String = bundle.get("INTENT_NICK").toString()
-        //Insancio el usuario
-        userFireBase = UserFirebase(nick,"********")
-        GlobalScope.launch {
+        var id: String = bundle.get("INTENT_NICK").toString()
+        //Recojo los usuarios de la base de datos
+        db.collection("Usuarios").get()
+            .addOnSuccessListener { result ->
+                var find = false
+           for (document in result){
+                    if (document.id == id) {
+                        userFireBase = UserFirebase(document.data["email"].toString(),"we dont get your password", document.data["score"].toString().toInt())
+                        userFireBase.setId(document.id)
+                        binding.txtScoreName.text = userFireBase.getEmail().subSequence(0,6)
+                        find = true
+                    }else{
+                        if(!find){
+                            userFireBase = UserFirebase(id,"we dont get your password", 0)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
+
+
+        //Establezco que el usuario actual será el usuario que se ha logueado
             //Añado el usuario a la base de datos y recojo el usuario con mayor puntuación
             //addUser(user)
             GetMaxScore()
-        }
+
     }
 
-    /**
-     * Método que se encarga de añadir el usuario actual a la base de datos
-     *
-     */
-    private fun addUser(userEntity: UserEntity) = runBlocking {
-        launch {
-            val id: Long = SimonSaysApp.database.userDao().insertUser(userEntity)
-            user = SimonSaysApp.database.userDao().getUserById(id)
-        }
+    ///**
+    // * Método que se encarga de añadir el usuario actual a la base de datos
+    // *
+    // */
+    //private fun addUser(userEntity: UserEntity) = runBlocking {
+    //    launch {
+    //        val id: Long = SimonSaysApp.database.userDao().insertUser(userEntity)
+    //        user = SimonSaysApp.database.userDao().getUserById(id)
+    //    }
+    //}
+
+    ///**
+    // * Método que envia una petición update para actualizar el score del usuario actual segun sea necesario
+    // */
+    //private fun UpdateScore(user: UserEntity) = runBlocking {
+    //    launch {
+    //        SimonSaysApp.database.userDao().updateScore(user)
+//
+    //    }
+    //}
+
+    private fun UpdateScore(user: UserFirebase){
+
+           db.collection("Usuarios").document(user.getId()).update("score", user.getScore())
     }
 
-    /**
-     * Método que envia una petición update para actualizar el score del usuario actual segun sea necesario
-     */
-    private fun UpdateScore(user: UserEntity) = runBlocking {
-        launch {
-            SimonSaysApp.database.userDao().updateScore(user)
+    //Acutalizar el score del usuario actual en firebase
 
-        }
-    }
+
+
+
+
+
 
 
 
@@ -150,7 +189,24 @@ class MainActivity : AppCompatActivity() {
      */
     private fun GetMaxScore() = runBlocking {
         launch {
-            //bestUser = SimonSaysApp.database.userDao().getMaxScore();
+            db.collection("Usuarios").get()
+                .addOnSuccessListener { result ->
+                    var finalScore = bestFireBaseUser.getScore()
+                    for (document in result) {
+                        var testscore = document.data["score"].toString().toInt()
+                        if (testscore > finalScore) {
+                            bestFireBaseUser = UserFirebase(document.data["email"].toString(),"*********", testscore)
+                            binding.txtBestScore.text = "Best: ${bestFireBaseUser.getScore() }"
+                            binding.txtBestScoreName.text = bestFireBaseUser.getEmail().subSequence(0,6)
+                            finalScore = testscore
+                        }
+                    }
+
+                }
+                .addOnFailureListener { exception ->
+                    println("Error getting documents: $exception")
+                }
+
             //recojo la puntacion del usuario de firebase
         }
 
@@ -165,14 +221,7 @@ class MainActivity : AppCompatActivity() {
      * con id btnAtras
      */
     fun clickBtnAtras() {
-        //Si el user no tiene id se llamará al método que
-        //obtiene el usuario del activity Login y establecerá el
-        //correspondiente
-        if (user.id == 0)
-            getUserFromLogin()
-        //Después llamaremos al método que finaliza el juego,
-        // para registrar la puntuacion del usuario si este le diese en
-        // medio de una partida en la que llevase una alta puntuación
+
         end()
         //Creamos el intent para viajar de nuevo al login
         var intent = Intent(this, AuthAcitvity::class.java)
@@ -206,10 +255,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnAuto.setOnClickListener { onClickBotonesInicio(0) }
     }
 
+
+    /**
+     * Set OnClick Botones Juego
+     */
     fun setClickBotonesJuego() {
-        /**
-         * Set OnClick Botones Juego
-         */
+
         getUserFromLogin()
         binding.btnAzul.setOnClickListener { onClickBotonesJuego(Colores.AZUL) }
         binding.btnAmarillo.setOnClickListener { onClickBotonesJuego(Colores.AMARILLO) }
@@ -354,16 +405,14 @@ class MainActivity : AppCompatActivity() {
      * Finaliza el juego y lo reinicia
      */
     fun end() {
-
-
         //Si el score que el usuario ha conseguido en esta partida
-
-        if (score > user.score) {
-            user.score = score
+        var testscore = userFireBase.getScore()
+        if (score >= testscore) {
+            userFireBase.setScore(score)
             //Se actualizará su atributo score dentrp de la base de datos
-            GlobalScope.launch {
-                UpdateScore(user)
-            }
+
+                UpdateScore(userFireBase)
+
         }
         rondas = 0
         score = 0
@@ -386,6 +435,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Método que se encarga de, en cada ronda, comprobar si el jugador se ha equivocado o no
      */
+    @SuppressLint("SetTextI18n")
     private fun siguienteRonda() {
 
         //Si fallo = true llamo a la funcion end
@@ -403,13 +453,15 @@ class MainActivity : AppCompatActivity() {
                 rondas++
                 score++
                 //Si las rondas conseguidas por el usuario son mayores que las de la mejor puntuacion
-                if (score > bestUser.score)
-                //Ahora la mayor puntuacion es la del usuario
-                    bestUser = user
+                if (score > bestFireBaseUser.getScore()){
+                    //Ahora la mayor puntuacion es la del usuario
+                    bestFireBaseUser = userFireBase
+
+                }
+
                 //Establezco el atributo text de los TextView pertenecientes a las puntuaciones
-                this.binding.txtScore.text = "Score:  ${user.score} \n ${user.nickname}"
-                this.binding.txtBestScore.text =
-                    "Best Score: ${bestUser.score} \n ${bestUser.nickname}"
+                this.binding.txtScore.text = "Score:  $score"
+                this.binding.txtBestScore.text = "Best Score: ${bestFireBaseUser.getScore()}"
 
                 /**
                  * Toda esta zona no me hace ni puto caso.

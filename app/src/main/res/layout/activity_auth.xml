@@ -4,46 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AuthAcitvity"
-    android:background="@color/grey">
-
-    <TextView
-        android:id="@+id/tvmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="e-mail"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@id/btnSignUp"
-        app:layout_constraintEnd_toStartOf="@+id/etPass"
-        app:layout_constraintHorizontal_bias="0.466"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contenedorScores"
-        app:layout_constraintVertical_bias="0.188" />
-
-    <EditText
-        android:id="@+id/etmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="100dp"
-        app:layout_constraintBottom_toTopOf="@id/btnSignUp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contenedorScores"
-        app:layout_constraintVertical_bias="0.157" />
+    android:background="@color/grey"
+    tools:context=".AuthAcitvity">
 
     <androidx.appcompat.widget.Toolbar
-    app:titleTextColor="@color/black"
-    app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:title="Simon Says"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/contenedorScores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleMarginStart="150dp"
+        app:layout_constraintBottom_toTopOf="@id/contenedorScores"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".0"
+        app:title="Simon Says"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
 
-    app:layout_constraintVertical_bias=".0"/>
+        app:titleTextColor="@color/black" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -59,45 +35,50 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.175" />
+        app:layout_constraintVertical_bias="0.21" />
 
     <EditText
         android:id="@+id/etPass"
-        android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="100dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="60dp"
+        android:inputType="textPassword"
+        android:maxHeight="35dp"
         app:layout_constraintBottom_toTopOf="@id/btnSignUp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contenedorScores"
-        app:layout_constraintVertical_bias="0.439" />
+        app:layout_constraintVertical_bias="0.608" />
 
     <TextView
-        android:id="@+id/tvpass"
+        android:id="@+id/tvmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pass"
+        android:text="e-mail"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/btnSignUp"
         app:layout_constraintEnd_toStartOf="@+id/etPass"
-        app:layout_constraintHorizontal_bias="0.466"
+        app:layout_constraintHorizontal_bias="0.338"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contenedorScores"
-        app:layout_constraintVertical_bias="0.452" />
+        app:layout_constraintVertical_bias="0.135" />
 
-    <Button
-        android:id="@+id/btnSignUp"
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/etmail"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign up"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="60dp"
+        android:maxHeight="50dp"
+        app:layout_constraintBottom_toTopOf="@id/btnSignUp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/contenedorScores"
-        app:layout_constraintVertical_bias="0.737" />
+        app:layout_constraintTop_toBottomOf="@+id/contenedorScores"
+        app:layout_constraintVertical_bias="0.106" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -106,7 +87,33 @@
         android:text="Log in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.844"
+        app:layout_constraintHorizontal_bias="0.678"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contenedorScores"
+        app:layout_constraintVertical_bias="0.736" />
+
+    <TextView
+        android:id="@+id/tvpass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pass"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/btnSignUp"
+        app:layout_constraintEnd_toStartOf="@+id/etPass"
+        app:layout_constraintHorizontal_bias="0.521"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contenedorScores"
+        app:layout_constraintVertical_bias="0.585" />
+
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.287"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contenedorScores"
         app:layout_constraintVertical_bias="0.737" />

@@ -1,12 +1,13 @@
 package com.example.simondicetap.firebase
 
-class UserFirebase {
-    var score: Int = 0
-    var email: String = ""
-    var password: String = ""
+public class UserFirebase {
+    private var id: String = ""
+    private var score: Int = 0
+    private var email: String = ""
+    private var password: String = ""
 
     //Constructor vacío
-    constructor()
+    constructor(){}
 
 
     //Constructor con parámetros
@@ -15,32 +16,52 @@ class UserFirebase {
         this.email = email
         this.password = password
     }
+    constructor(email: String, password: String, score: Int) {
+        this.score = score
+        this.email = email
+        this.password = password
+    }
 
-    //getters and setters
-    fun getScore(): Int {
-        return score
+    fun addScore(score: Int) {
+        this.score += score
     }
 
     fun setScore(score: Int) {
         this.score = score
     }
-
-    fun getEmail(): String {
-        return email
+    fun addOneScore() {
+        this.score += 1
     }
 
+    fun getScore(): Int {
+        return this.score
+    }
+
+    fun getEmail(): String {
+        return this.email
+    }
+
+
+
+    fun getId(): String {
+        return this.id
+    }
+
+
+    fun setId(id: String) {
+        this.id = id
+    }
     fun setEmail(email: String) {
         this.email = email
     }
 
     fun getPassword(): String {
-        return password
+        return this.password
     }
 
     fun setPassword(password: String) {
         this.password = password
     }
-
 
 
 }
